@@ -1,5 +1,15 @@
-
-
+'''
+常用的爬蟲函數，資料來源都是twse
+[import]
+    requests
+    pandas as pd
+[def]
+    get_stock_id_list
+    get_etf_id_list
+    get_otc_id_list
+    get_latest_trading_days
+    get_stock_month_price
+'''
 
 import requests
 import pandas as pd
@@ -59,7 +69,7 @@ def get_etf_id_list():
 
 def get_otc_id_list():
     '''
-    取得上貴股票名單
+    取得上櫃股票名單
     [return] list 上櫃股票名單_list
     '''
     本國企業_datas_dict = {'stk_code':"",'stk_category':"02",'choice_type':"stk_type",'stk_type':""}
@@ -96,10 +106,12 @@ def get_stock_month_price(stock_id, year, month):
     '''
     取得股票的某月的股價資料(開高低收成交量)
     [param]
-        str stock_id: exp:'1101' # 股票代碼
-        str year:     exp:'2021' # 年份
-        str month:    exp:'01'   # 月份
-    [return] dict:    dict_keys(['stat','date','title','fields','data','notes'])
+        str stock_id: exp:'1101'
+        str year:     exp:'2021'
+        str month:    exp:'01'
+    [return] 
+        dict:         dict_keys(['stat','date','title','fields','data','notes'])
+        dict:         {"stat":"很抱歉，沒有符合條件的資料!"}
     '''
     url = 'https://www.twse.com.tw/exchangeReport/STOCK_DAY'
     date = year + month + '01'

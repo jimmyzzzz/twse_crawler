@@ -1,3 +1,37 @@
+'''
+爬蟲函數會用到的裝飾器
+[import]
+    os
+    datetime import datetime
+    time
+    pickle
+[def]
+    if_not_exists_then_makefile
+    record_error_decorator
+    try_loop_decorator
+    backup_decorator
+[class]
+    decorator_error
+    run_func_error
+    record_log_error
+'''
+
+import os
+
+def if_not_exists_then_makefile(path):
+    '''如果檔案不存在就新建該檔案'''
+    
+    # 如果檔案存在
+    if os.path.exists(path): return
+
+    dir_path,file_name = os.path.split(path)
+    
+    # 建立資料夾
+    if dir_path != '': os.makedirs(dir_path)
+    
+    # 建立檔案
+    f=open(path, 'w')
+    f.close()
 
 
 class decorator_error:
@@ -13,6 +47,8 @@ class record_log_error(decorator_error):
     pass
 
 
+from datetime import datetime
+
 def record_error_decorator(log_path='error.log'):
     '''
     用來紀錄函數運行錯誤的裝飾器
@@ -23,6 +59,9 @@ def record_error_decorator(log_path='error.log'):
         run_func_error:   函數報錯，保存錯誤訊息成功
         record_log_error: 函數報錯，保存錯誤訊息失敗
     '''
+    
+    # 如果檔案不存在就新建該檔案
+    if_not_exists_then_makefile(log_path)
     
     def decorator(func):
         def wrapper(*args, **kwargs):
@@ -39,7 +78,7 @@ def record_error_decorator(log_path='error.log'):
                 error_message=str(error)
                 
                 # 紀錄的錯誤訊息
-                record_message_str=f"[{now_time_str}] {func_name}: {error_message}"
+                record_message_str=f"[{now_time_str}] {func_name}: {error_message}\n"
                 
                 # 添加錯誤訊息到log中
                 with open(log_path, 'a+', encoding='utf-8') as f:
@@ -52,6 +91,8 @@ def record_error_decorator(log_path='error.log'):
         return wrapper
     return decorator
 
+
+import time
 
 def try_loop_decorator(times=3, sleep_time=2):
     '''
@@ -81,22 +122,6 @@ def try_loop_decorator(times=3, sleep_time=2):
 
 
 import pickle
-import os
-
-def if_not_exists_then_makefile(path):
-    '''如果檔案不存在就新建該檔案'''
-    
-    # 如果檔案存在
-    if os.path.exists(path): return
-
-    dir_path,file_name = os.path.split(path)
-    
-    # 建立資料夾
-    if dir_path != '': os.makedirs(dir_path)
-    
-    # 建立檔案
-    f=open(path, 'w')
-    f.close()
 
 def backup_decorator(backup_path):
     '''
@@ -109,6 +134,8 @@ def backup_decorator(backup_path):
         Exception:         func報錯
         FileNotFoundError: 備份檔案無法開啟
     '''
+    
+    # 如果檔案不存在就新建該檔案
     if_not_exists_then_makefile(backup_path)
     
     def decorator(func):
