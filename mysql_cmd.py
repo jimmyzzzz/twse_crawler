@@ -2,11 +2,13 @@
 使用物件的方式產生mysql指令
 [def]
     format_str
+    join_slist
     create_cmd
+    
 [class]
     basic_cmd
-    condition_cmd  <-basic_cmd
-    main_cmd       <-condition_cmd
+    create_condition_cmd <-basic_cmd
+    create_main_cmd      <-basic_cmd
 '''
 
 def format_str(x):
@@ -14,6 +16,7 @@ def format_str(x):
     return f"'{x}'" if type(x)==str else x
 
 def join_slist(slist):
+    '''修改list中的字串的內容，方便轉換成mysql指令'''
     join_list=[]
     for s in slist:
         if type(s)==str: join_list.append(format_str(s))
@@ -22,14 +25,8 @@ def join_slist(slist):
 
 class basic_cmd:
     '''cmd的基本類'''
-    def __init__(self, table, command):
-        '''
-        [param]
-            str table:   資料表名稱
-            str command: 要添加在前面的指令
-        '''
-        self.table=table
-        self.command=command
+    def __init__(self):
+        self.command=''
     
     def __repr__(self):
         return f"cmd({self.command.__repr__()})"
@@ -38,16 +35,15 @@ class condition_cmd(basic_cmd):
     '''
     增加條件判斷的功能
     
-    操作1:   cmd['id']==1
+    操作1:   cls('id')==1
     產生指令: "id = 1"
     
-    操作2:   (cmd['id']>1) & (cmd['name']=='jimmy zzzz')
+    操作2:   (cls('id')>1) & (cls('name')=='jimmy zzzz')
     產生指令: "id > 1 AND name = 'jimmy zzzz'"
     
     '''
-    def __getitem__(self, col_str):
-        new_command=col_str
-        return type(self)(self.table, new_command)
+    def __init__(self,col_name):
+        self.command=col_name
     
     def new_command(self, other, symbol):
         other_str=format_str(other)
@@ -55,38 +51,46 @@ class condition_cmd(basic_cmd):
     
     def __lt__(self, other):
         command=self.new_command(other,'<')
-        return type(self)(self.table, command)
+        return type(self)(command)
     
     def __le__(self, other):
         command=self.new_command(other,'<=')
-        return type(self)(self.table, command)
+        return type(self)(command)
     
     def __eq__(self, other):
         command=self.new_command(other,'=')
-        return type(self)(self.table, command)
+        return type(self)(command)
         
     def __ne__(self, other):
         command=self.new_command(other,'!=')
-        return type(self)(self.table, command)
+        return type(self)(command)
         
     def __gt__(self, other):
         command=self.new_command(other,'>')
-        return type(self)(self.table, command)
+        return type(self)(command)
         
     def __ge__(self, other):
         command=self.new_command(other,'>=')
-        return type(self)(self.table, command)
+        return type(self)(command)
     
     def __and__(self, other):
         command=f"{self.command} AND {other.command}"
-        return type(self)(self.table, command)
+        return type(self)(command)
     
     def __or__(self, other):
         command=f"{self.command} OR {other.command}"
-        return type(self)(self.table, command)
+        return type(self)(command)
 
-class main_cmd(condition_cmd):
+class main_cmd(basic_cmd):
     '''增加基本指令的功能'''
+    def __init__(self, table, command):
+        '''
+        [param]
+            str table:   資料表名稱
+            str command: 要添加在前面的指令
+        '''
+        self.table=table
+        self.command=command
     
     def insert(self, col_list):
         '''
@@ -129,6 +133,22 @@ class main_cmd(condition_cmd):
         new_command=f"{self.command} ORDER BY {col_name} DESC"
         return type(self)(self.table, new_command)
     
-def create_cmd(table_name):
-    '''產生指令的實例'''
+    def show_tab(self, col):
+        col=', '.join(col) if type(col)==list else col
+        new_command=f"SHOW {col} FROM {self.table}"
+        return type(self)(self.table, new_command)
+
+    
+def create_condition_cmd():
+    '''產生condition_cmd的實例'''
+    class condition_creater:
+        def __getitem__(self, col_name):
+            return condition_cmd(col_name)
+        def __getattr__(self, col_name):
+            return condition_cmd(col_name)
+    return condition_creater()
+        
+def create_main_cmd(table_name):
+    '''產生main_cmd的實例'''
     return main_cmd(table_name, '')
+
