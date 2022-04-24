@@ -1,14 +1,15 @@
 '''
-常用的爬蟲函數，資料來源都是twse
+常用的爬蟲函數
 [import]
     requests
     pandas as pd
 [def]
-    get_stock_id_list
-    get_etf_id_list
-    get_otc_id_list
-    get_latest_trading_days
-    get_stock_month_price
+    get_stock_id_list       <- dts.twse.com.tw
+    get_etf_id_list         <- www.twse.com.tw
+    get_otc_id_list         <- www.tpex.org.tw
+    get_0050_list           <- www.cmoney.tw
+    get_latest_trading_days <- www.twse.com.tw
+    get_stock_month_price   <- www.twse.com.tw
 '''
 
 import requests
@@ -91,6 +92,23 @@ def get_otc_id_list():
     return 上櫃股票名單_list
 
 
+def get_0050_list():
+    '''
+    取得0050成份股
+    [return] list
+    '''
+    payload={
+    'action': 'GetShareholdingDetails',
+    'stockId': '0050'
+    }
+
+    res=requests.post( "https://www.cmoney.tw/etf/ashx/e210.ashx", data=payload)
+    res=res.json()
+    
+    s0050_list=[ d['CommKey'] for d in res['Data']]
+    return s0050_list
+
+
 def get_latest_trading_days():
     '''
     取得目前最新的交易日日期
@@ -119,4 +137,3 @@ def get_stock_month_price(stock_id, year, month):
     
     res = requests.get(url, params=payload)
     return res.json()
-
