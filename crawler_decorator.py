@@ -52,6 +52,7 @@ from datetime import datetime
 def record_error_decorator(log_path='error.log'):
     '''
     用來紀錄函數運行錯誤的裝飾器
+    被裝飾的函數可以通過加入「_message」參數，來紀錄額外資訊
     [param]
         str log_path:     如果函數報錯，保存錯誤的路徑
     [return]
@@ -65,7 +66,16 @@ def record_error_decorator(log_path='error.log'):
     
     def decorator(func):
         def wrapper(*args, **kwargs):
+            
+            # 可以在函數傳入特殊參數:　_message
+            # 報錯時可以提供額外訊息
+            additional_message=''
+            if '_message' in kwargs:
+                additional_message=kwargs['_message']
+                del kwargs['_message']
+            
             try:
+                
                 return func(*args, **kwargs)
             
             except Exception as error:
@@ -78,7 +88,7 @@ def record_error_decorator(log_path='error.log'):
                 error_message=str(error)
                 
                 # 紀錄的錯誤訊息
-                record_message_str=f"[{now_time_str}] {func_name}: {error_message}\n"
+                record_message_str=f"[{now_time_str}] {func_name} {additional_message}: {error_message}\n"
                 
                 # 添加錯誤訊息到log中
                 with open(log_path, 'a+', encoding='utf-8') as f:
