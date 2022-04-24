@@ -7,8 +7,8 @@
     
 [class]
     basic_cmd
-    create_condition_cmd <-basic_cmd
-    create_main_cmd      <-basic_cmd
+    condition_cmd <-basic_cmd
+    main_cmd      <-basic_cmd
 '''
 
 def format_str(x):
