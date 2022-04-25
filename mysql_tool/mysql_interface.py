@@ -13,7 +13,7 @@
 import warnings
 warnings.simplefilter(action='ignore', category=UserWarning)
 
-import mysql_cmd
+import mysql_tool.mysql_cmd as mysql_cmd
 import pandas as pd
 
 # 用於條件判斷，詳見:mysql_cmd

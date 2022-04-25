@@ -17,8 +17,8 @@
     get_df
 '''
 
-import crawlers as cs
-import crawler_decorator as cd
+import crawler_tool.crawlers as cs
+import crawler_tool.crawler_decorator as cd
 import numpy as np
 import pandas as pd
 
