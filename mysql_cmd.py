@@ -133,11 +133,21 @@ class main_cmd(basic_cmd):
         new_command=f"{self.command} ORDER BY {col_name} DESC"
         return type(self)(self.table, new_command)
     
+    def limit(self, int_list):
+        '''
+        [param]
+            list[int] int_list:
+                [1]   => "Limit 1"
+                [1,2] => "Limit 1, 2"
+        '''
+        join_str=join_slist(int_list)
+        new_command=f"{self.command} Limit {join_str}"
+        return type(self)(self.table, new_command)
+    
     def show_tab(self, col):
         col=', '.join(col) if type(col)==list else col
         new_command=f"SHOW {col} FROM {self.table}"
         return type(self)(self.table, new_command)
-
     
 def create_condition_cmd():
     '''產生condition_cmd的實例'''
