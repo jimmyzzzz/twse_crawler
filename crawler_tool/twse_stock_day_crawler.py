@@ -124,7 +124,17 @@ def stock_df_format(stock_df):
     return new_df
 
 
-def get_df(stock_id, year, month, fail_return=None):
+def int_formate_str(n):
+    '''
+    將數字變成標準格式的str
+    exp: 1=>'01', '4'=>'04'
+    [param] int/str n
+    '''
+    int_n=int(n)
+    if int_n >= 10: return str(int_n)
+    return '0'+str(int_n)
+
+def get_month_df(stock_id, year, month, fail_return=None):
     '''
     取得twse抓到的月股價資料
     1. 整理參數格式
@@ -134,15 +144,14 @@ def get_df(stock_id, year, month, fail_return=None):
         str stock_id:     股票名稱: '1101'
         str/int year:     年份: '2022' or 2022
         str/int month:    月份: '4' or '04' or 4
+        fail_return:      抓取失敗時回傳的結果
     [return]
         pd.DataFrame:     運作正常
         fail_return:      有報錯時
     '''
     # 整理參數格式:全部轉換成str
-    # exp: stock_id='1101' year='2022' month='04'
     year=str(year)
-    month=int(month)
-    month='0'+str(month) if month<10 else str(month)
+    month=int_formate_str(month)
     
     # 抓取資料DataFrame
     df=stock_crawler(stock_id, year, month,
@@ -156,4 +165,33 @@ def get_df(stock_id, year, month, fail_return=None):
     # 如果整理DataFrame格式成功，才回傳
     if isinstance(df, cd.decorator_error): return fail_return
     return df
-        
+
+def get_day_df(stock_id, year, month, day, fail_return=None):
+    '''
+    取得twse抓到的日股價資料
+    1. 整理參數格式
+    2. 抓取月資料DataFrame
+    3. 從月資料中取得日資料
+    [param]
+        str stock_id:     股票名稱: '1101'
+        str/int year:     年份: '2022' or 2022
+        str/int month:    月份: '4' or '04' or 4
+        str/int day:      日期: '1' or '01' or 1
+        fail_return:      抓取失敗時回傳的結果
+    [return]
+        pd.DataFrame:     運作正常
+        fail_return:      有報錯時
+    '''
+    # 整理參數格式:轉換成str
+    year=str(year)
+    month=int_formate_str(month)
+    day=int_formate_str(day)
+    
+    # 抓取月資料DataFrame
+    class crawler_fail_return: pass
+    df=get_month_df(stock_id, year, month, crawler_fail_return())
+    
+    # 如果抓取成功，則從月資料中取得日資料
+    if isinstance(df, crawler_fail_return): return fail_return
+    df=df[df['date']==f"{year}-{month}-{day}"]
+    return df

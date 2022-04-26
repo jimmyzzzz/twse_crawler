@@ -9,4 +9,5 @@ from crawler_tool.crawlers import get_otc_id_list
 from crawler_tool.crawlers import get_0050_list
 from crawler_tool.crawlers import get_latest_trading_days
 
-from crawler_tool.twse_stock_day_crawler import get_df as get_month_price
+from crawler_tool.twse_stock_day_crawler import get_month_df as get_month_price
+from crawler_tool.twse_stock_day_crawler import get_day_df as get_day_price
