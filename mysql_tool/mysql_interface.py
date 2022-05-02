@@ -10,9 +10,6 @@
     mysql_interface
 '''
 
-import warnings
-warnings.simplefilter(action='ignore', category=UserWarning)
-
 import mysql_tool.mysql_cmd as mysql_cmd
 import pandas as pd
 
@@ -61,7 +58,7 @@ class mysql_interface:
             step=r.stop-r.start
             new_cmd=self.cmd_if.select().limit([start,step])
             
-        else:
+        else: # type(cmd)==str
             new_cmd=self.cmd_if.select(cmd)
         
         return self.read_df(new_cmd)
@@ -92,7 +89,7 @@ class mysql_interface:
         '''
         df=self.columns_info
         return list(df['Field'])
-    
+        
     def commit(self, cmd_list):
         '''
         執行裝有指令的list中的指令
@@ -115,7 +112,7 @@ class mysql_interface:
         mysql_cmd.basic_cmd cmd
         str cmd
         None n: 回傳全部結果
-        int n:  回傳前幾筆結果
+        int n:  回傳前幾筆結果s
         '''
         with self.conn.cursor() as cursor:
             if isinstance(cmd,mysql_cmd.basic_cmd):
@@ -136,7 +133,6 @@ class mysql_interface:
         
         commit_list=[]
         for idx, row in df.iterrows():
-            row=row.dropna()
             insert_cmd=self.cmd_if.insert(list(row.index))
             cmd=insert_cmd.values(list(row.array))
             
