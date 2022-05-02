@@ -44,3 +44,17 @@ class twse_pv_portal(sqlif):
         )
         
         super().__init__(conn=conn, tab=tab_name)
+        
+class twse_stock_portal(sqlif):
+    def __init__(self, user, password, host=DEFAULT_HOST, port=DEFAULT_PORT):
+        bd_name='stock_db'
+        tab_name='twse_stock'
+        conn=pymysql.connect(
+            host=host,
+            port=port,
+            user=user,
+            password=password,
+            db=bd_name
+        )
+        
+        super().__init__(conn=conn, tab=tab_name)

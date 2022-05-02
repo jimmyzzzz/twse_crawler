@@ -2,6 +2,7 @@
 from crawler_tool.crawler_decorator import record_error_decorator
 from crawler_tool.crawler_decorator import try_loop_decorator
 from crawler_tool.crawler_decorator import backup_decorator
+from crawler_tool.crawler_decorator import decorator_error
 
 from crawler_tool.crawlers import get_stock_id_list
 from crawler_tool.crawlers import get_etf_id_list

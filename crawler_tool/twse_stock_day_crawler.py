@@ -79,6 +79,7 @@ def stock_df_format(stock_df):
     1. 將欄位名稱變成英文的
     2. 修改date欄位的日期格式
     3. 數值化其他欄位
+    4. 計算mean欄位，並去除values欄位
     [param]
         str FORMAT_LOG_PATH:   報錯後保存錯誤資訊的路徑
         pd.DataFrame stock_df: stock_crawler回傳的DataFrame
@@ -121,8 +122,11 @@ def stock_df_format(stock_df):
     new_df['close'] = new_df['close'].apply(lambda x: float(change_value_format(x)))
     new_df['record'] = new_df['record'].apply(lambda x: int(change_value_format(x)))
     
+    # 計算均價mean欄位並去除value欄位
+    new_df['mean']=new_df['value']/new_df['volume']
+    new_df=new_df.drop("value", axis=1)
+    
     return new_df
-
 
 def int_formate_str(n):
     '''
