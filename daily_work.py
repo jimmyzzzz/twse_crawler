@@ -56,7 +56,7 @@ def get_stock_list():
     '''
     @backup_decorator(backup_path='backup_0050list.pickle')
     @try_loop_decorator(times=5, sleep_time=3)
-    @record_error_decorator(log_path='crawler_error.log')
+    @record_error_decorator(log_path='daily_error.log')
     def get_list():
         return get_0050_list()
     
@@ -120,15 +120,16 @@ def main():
     *也會保存一份到daily_df.csv中
     '''
     # 可以在這修改要抓的資料期
-    #now_date=datetime.now()
-    now_date=datetime.strptime('2022-04-28','%Y-%m-%d')
-    date_str=datetime.strftime(now_date,'%Y%m%d %H:%M:%S')
+    now_date=datetime.now()
+    #now_date=datetime.strptime('2022-04-28','%Y-%m-%d')
+    #date_str=datetime.strftime(now_date,'%Y%m%d %H:%M:%S')
      
     # 計時:開始
     time_start=time.time()
     
     # 確認今天是不是交易日
     if not today_is_trading_days(now_date):
+        print(f"[{date_str}] No need to crawl today")
         return
     
     # 抓取資料df
